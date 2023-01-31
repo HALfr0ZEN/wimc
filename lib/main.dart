@@ -1,41 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:wimc/components/navigation.dart';
+import 'package:wimc/core/res/color.dart';
+import 'package:wimc/routes/routes.dart';
 
 void main(List<String> args) {
   runApp(const App());
 }
 
-class App extends StatefulWidget {
-  const App({super.key});
-
-  @override
-  State<App> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  int getIndex() {
-    return _selectedIndex;
-  }
+class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'WimC',
-      home: Scaffold(
-        body: pages[_selectedIndex],
-        bottomNavigationBar: Navigation(
-          setPageIndex: _onItemTapped,
-          getPageIndex: getIndex,
-        ),
-      ),
+      title: 'WIMC',
+      debugShowCheckedModeBanner: false,
+      theme: AppColors.getTheme,
+      initialRoute: Routes.home,
+      onGenerateRoute: RouterGenerator.generateRoutes,
     );
   }
 }
