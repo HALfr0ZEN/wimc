@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wimc/core/res/color.dart';
+import 'package:wimc/pages/clothes/add.dart';
+import 'package:wimc/pages/clothes/index.dart';
 import 'package:wimc/pages/home.dart';
 import 'package:wimc/pages/settings.dart';
 
@@ -24,18 +26,13 @@ class NavigationDrawerWidget extends StatelessWidget {
               name: "name",
               context: context,
             ),
-            createMenuChild(
-              icon: Icons.home,
-              label: "Home",
-              onClicked: () => navigateTo(0, context),
-              context: context,
-            ),
+            ...buildMenu(context: context),
             const Spacer(),
             const Divider(color: Colors.white, height: 10),
             createMenuChild(
               icon: Icons.settings,
               label: "Settings",
-              onClicked: () => navigateTo(1, context),
+              onClicked: () => navigateTo(const Settings(), context),
               context: context,
             ),
           ],
@@ -43,6 +40,19 @@ class NavigationDrawerWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+Iterable<Widget> buildMenu({required BuildContext context}) {
+  Iterable<Widget> pages = pagesMap.map(
+    (page) => createMenuChild(
+      icon: page["icon"],
+      label: page["label"],
+      context: context,
+      onClicked: () => navigateTo(page["pagelink"], context),
+    ),
+  );
+
+  return pages;
 }
 
 Widget createMenuChild(
@@ -66,11 +76,26 @@ Widget createMenuChild(
   );
 }
 
-List<Widget> pages = [const Home(), const Settings()];
+List<Map<String, dynamic>> pagesMap = [
+  {
+    "label": "Home",
+    "icon": Icons.home,
+    "pagelink": const Home(),
+  },
+  {
+    "label": "Clothes",
+    "icon": Icons.checkroom,
+    "pagelink": const ShowClothes(),
+  },
+  {
+    "label": "AddClothes",
+    "icon": Icons.add_circle,
+    "pagelink": const AddClothes(),
+  },
+];
 
-void navigateTo(int index, BuildContext context) {
-  Navigator.of((context))
-      .push(MaterialPageRoute(builder: (context) => pages[index]));
+void navigateTo(Widget page, BuildContext context) {
+  Navigator.of((context)).push(MaterialPageRoute(builder: (context) => page));
 }
 
 Widget createHeader(

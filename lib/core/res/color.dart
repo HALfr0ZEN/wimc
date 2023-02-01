@@ -24,6 +24,22 @@ class AppColors {
           elevation: 0,
         ),
         colorScheme: const ColorScheme.light(),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all(AppColors.secondaryColor)),
+        ),
+        buttonTheme: ButtonThemeData(buttonColor: secondaryColor),
+        inputDecorationTheme: InputDecorationTheme(
+          floatingLabelStyle: TextStyle(color: primaryHeaderColor),
+          labelStyle: TextStyle(color: primaryHeaderColor.withOpacity(.5)),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: primaryHeaderColor, width: 20),
+          ),
+          focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: secondaryColor.withOpacity(.5))),
+          contentPadding: const EdgeInsetsDirectional.all(15),
+        ),
         textTheme: const TextTheme(
           bodyLarge: TextStyle(
             fontSize: 36,
