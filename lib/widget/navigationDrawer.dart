@@ -3,6 +3,7 @@ import 'package:wimc/core/res/color.dart';
 import 'package:wimc/pages/clothes/add.dart';
 import 'package:wimc/pages/clothes/index.dart';
 import 'package:wimc/pages/home.dart';
+import 'package:wimc/pages/login.dart';
 import 'package:wimc/pages/settings.dart';
 
 class NavigationDrawerWidget extends StatelessWidget {
@@ -29,12 +30,21 @@ class NavigationDrawerWidget extends StatelessWidget {
             ...buildMenu(context: context),
             const Spacer(),
             const Divider(color: Colors.white, height: 10),
-            createMenuChild(
-              icon: Icons.settings,
-              label: "Settings",
-              onClicked: () => navigateTo(const Settings(), context),
-              context: context,
-            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  color: AppColors.backgroundColor,
+                  onPressed: () => navigateTo(const Settings(), context),
+                  icon: const Icon(Icons.settings),
+                ),
+                IconButton(
+                  color: AppColors.backgroundColor,
+                  onPressed: () => navigateTo(const LoginForm(), context),
+                  icon: const Icon(Icons.logout),
+                )
+              ],
+            )
           ],
         ),
       ),

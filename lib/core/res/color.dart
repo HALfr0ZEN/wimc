@@ -36,8 +36,9 @@ class AppColors {
           border: OutlineInputBorder(
             borderSide: BorderSide(color: primaryHeaderColor, width: 20),
           ),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: secondaryColor.withOpacity(.5))),
+          prefixIconColor: secondaryColor,
+          focusedBorder:
+              OutlineInputBorder(borderSide: BorderSide(color: secondaryColor)),
           contentPadding: const EdgeInsetsDirectional.all(15),
         ),
         textTheme: const TextTheme(

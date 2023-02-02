@@ -14,6 +14,6 @@ class _AddClothesState extends State<AddClothes> {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldWidget(body: AddClothesFormWidget());
+    return ScaffoldWidget(body: const AddClothesFormWidget());
   }
 }

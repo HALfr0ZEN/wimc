@@ -1,8 +1,13 @@
 import 'dart:io';
-
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 import 'package:wimc/core/res/color.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:path/path.dart' as p;
 
 class AddClothesFormWidget extends StatefulWidget {
   const AddClothesFormWidget({super.key});
@@ -18,6 +23,9 @@ class _AddClothesFormWidgetState extends State<AddClothesFormWidget> {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController name = TextEditingController();
+    TextEditingController quantity = TextEditingController(text: '1');
+
     return Form(
       key: _formKey,
       child: Padding(
@@ -27,6 +35,7 @@ class _AddClothesFormWidgetState extends State<AddClothesFormWidget> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             TextFormField(
+              controller: name,
               decoration: const InputDecoration(
                 labelText: 'Product name',
               ),
@@ -40,8 +49,8 @@ class _AddClothesFormWidgetState extends State<AddClothesFormWidget> {
             ),
             const SizedBox(height: 10),
             TextFormField(
+              controller: quantity,
               keyboardType: TextInputType.number,
-              initialValue: '1',
               decoration: const InputDecoration(
                 labelText: 'Quantity',
               ),
@@ -85,17 +94,44 @@ class _AddClothesFormWidgetState extends State<AddClothesFormWidget> {
                   return;
                 }
               },
-              child: Icon(Icons.add_a_photo),
+              child: const Icon(Icons.add_a_photo),
             ),
             ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  // If the form is valid, display a snackbar. In the real world,
-                  // you'd often call a server or save the information in a database.
+              onPressed: () async {
+                if (_formKey.currentState!.validate() &&
+                    selectedValue != null &&
+                    selectedFiles != null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         backgroundColor: AppColors.primaryHeaderColor,
                         content: const Text('Processing Data')),
+                  );
+                  const uuid = Uuid();
+                  final storage = FirebaseStorage.instance.ref();
+
+                  List<String> fileIds = [];
+                  for (var file in selectedFiles!) {
+                    final child =
+                        storage.child("${uuid.v1()}${p.extension(file.path)}");
+                    final snap = await child.putFile(file);
+                    final link = await snap.ref.getDownloadURL();
+                    fileIds.add(link);
+                  }
+
+                  Map<String, dynamic> dataToSave = {
+                    'name': name.text,
+                    'quantity': quantity.text,
+                    'type': selectedValue!,
+                    'file_links': fileIds,
+                  };
+                  final reference = await FirebaseFirestore.instance
+                      .collection('clothes')
+                      .add(dataToSave);
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        backgroundColor: AppColors.primaryHeaderColor,
+                        content: const Text('Done')),
                   );
                 }
               },
