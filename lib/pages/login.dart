@@ -130,26 +130,8 @@ class _LoginFormState extends State<LoginForm> {
                     },
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Forgot password ?",
-                            style: TextStyle(
-                                decoration: TextDecoration.underline,
-                                color: AppColors.primaryHeaderColor),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            "Don't have account ?",
-                            style: TextStyle(
-                                decoration: TextDecoration.underline,
-                                color: AppColors.primaryHeaderColor),
-                          ),
-                        ],
-                      ),
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {

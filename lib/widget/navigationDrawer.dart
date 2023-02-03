@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wimc/core/res/color.dart';
 import 'package:wimc/pages/clothes/add.dart';
@@ -6,8 +7,25 @@ import 'package:wimc/pages/home.dart';
 import 'package:wimc/pages/login.dart';
 import 'package:wimc/pages/settings.dart';
 
-class NavigationDrawerWidget extends StatelessWidget {
+class NavigationDrawerWidget extends StatefulWidget {
   const NavigationDrawerWidget({super.key});
+
+  @override
+  State<NavigationDrawerWidget> createState() => _NavigationDrawerWidgetState();
+}
+
+class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
+  String getUserName() {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
+    if (user != null) {
+      final email = user.email;
+      if (email != null) {
+        return email.split('@')[0];
+      }
+    }
+    return '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +41,7 @@ class NavigationDrawerWidget extends StatelessWidget {
         child: Column(
           children: <Widget>[
             createHeader(
-              imageUrl: "a",
-              name: "name",
+              name: getUserName(),
               context: context,
             ),
             ...buildMenu(context: context),
@@ -108,10 +125,7 @@ void navigateTo(Widget page, BuildContext context) {
   Navigator.of((context)).push(MaterialPageRoute(builder: (context) => page));
 }
 
-Widget createHeader(
-    {required String imageUrl,
-    required String name,
-    required BuildContext context}) {
+Widget createHeader({required String name, required BuildContext context}) {
   return Container(
     padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 10),
     color: Color.fromARGB(50, 0, 0, 0),
@@ -119,7 +133,7 @@ Widget createHeader(
       children: [
         CircleAvatar(
           radius: 30,
-          backgroundImage: NetworkImage(imageUrl),
+          child: Text(name.substring(0, 2)),
         ),
         const SizedBox(width: 20),
         Text(
