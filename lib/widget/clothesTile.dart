@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:camera/camera.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:core';
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
@@ -14,53 +17,57 @@ class ClothesTileWidget extends StatefulWidget {
 }
 
 class _ClothesTileWidgetState extends State<ClothesTileWidget> {
+  String? clothingLink;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: AppColors.primaryColor,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryColor.withOpacity(0.4),
-            blurRadius: 10,
-            spreadRadius: 4,
-            offset: const Offset(2, 6),
-          )
-        ],
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(children: [
-        Align(
-          alignment: Alignment.topRight,
-          child: IconButton(
-            icon: Icon(Icons.refresh, color: AppColors.backgroundColor),
-            onPressed: loadRandomPart,
+    return Center(
+      child: FractionallySizedBox(
+        widthFactor: 0.7,
+        child: Container(
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: AppColors.primaryColor,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primaryColor.withOpacity(0.4),
+                blurRadius: 10,
+                spreadRadius: 4,
+                offset: const Offset(2, 6),
+              )
+            ],
+            borderRadius: BorderRadius.circular(20),
           ),
+          child: Column(children: [
+            clothingLink != null
+                ? Image.network(
+                    clothingLink!,
+                  )
+                : SizedBox(width: 50),
+            Align(
+              alignment: Alignment.topRight,
+              child: IconButton(
+                icon: Icon(Icons.refresh, color: AppColors.backgroundColor),
+                onPressed: loadRandomPart,
+              ),
+            ),
+          ]),
         ),
-      ]),
+      ),
     );
   }
 
-  void addNewPart() async {
-    // final cameras = await availableCameras();
-    // final firstCamera = cameras.first;
-    // const controler = CameraController(firstCamera, ResolutionPreset.max);
-    // await controler.initialize();
-    // if (!controler.value.isInitialized) {
-    //   return Container();
-    // }
-    // CameraPreview(controler);
-    // Directory documentDirectory = await getApplicationDocumentsDirectory();
-    // File file =
-    //     File(path.join(documentDirectory.path, path.basename("template.png")));
-    // await file.writeAsBytes();
-  }
-
   void loadRandomPart() async {
+    ListResult result = await FirebaseStorage.instance.ref().listAll();
+    var rng = Random();
+    int randomInt = rng.nextInt(result.items.length);
+    print(randomInt);
+    final gen = result.items[randomInt];
+    final link = await gen.getDownloadURL();
+
+    setState(() {
+      clothingLink = link;
+    });
     //load shirt from memory
-    Directory documentDirectory = await getApplicationDocumentsDirectory();
-    Stream<FileSystemEntity> l = documentDirectory.list();
 
     // setState(() {
     //   _part = new File(path.join(documentDirectory.path, path.basename()));

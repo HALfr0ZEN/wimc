@@ -20,20 +20,23 @@ class Home extends StatelessWidget {
             Icon(Icons.add_rounded, size: 40, color: AppColors.backgroundColor),
         onPressed: () => navigateTo(const AddClothes(), context),
       ),
-      body: Column(
-        children: const [
-          ClothesTileWidget(),
-          SizedBox(
-            height: 10,
-          ),
-          ClothesTileWidget()
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Text("Your clothing",
+                style:
+                    TextStyle(color: AppColors.secondaryColor, fontSize: 40)),
+            const SizedBox(
+              height: 10,
+            ),
+            const ClothesTileWidget(),
+            const SizedBox(
+              height: 10,
+            ),
+            const ClothesTileWidget()
+          ],
+        ),
       ),
     );
   }
 }
-
-// () async {
-//           await availableCameras().then((value) => Navigator.push(context,
-//               MaterialPageRoute(builder: (_) => Camera(cameras: value))));
-//         },

@@ -19,7 +19,7 @@ class AddClothesFormWidget extends StatefulWidget {
 class _AddClothesFormWidgetState extends State<AddClothesFormWidget> {
   final _formKey = GlobalKey<FormState>();
   String? selectedValue;
-  List<File>? selectedFiles;
+  File? selectedFile;
 
   @override
   Widget build(BuildContext context) {
@@ -80,17 +80,16 @@ class _AddClothesFormWidgetState extends State<AddClothesFormWidget> {
                   },
                 ),
                 Row(
-                  children: [...imagesBuilder(selectedFiles)],
+                  children: [imagesBuilder(selectedFile)],
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    FilePickerResult? result = await FilePicker.platform
-                        .pickFiles(allowMultiple: true);
+                    FilePickerResult? result =
+                        await FilePicker.platform.pickFiles();
                     if (result != null) {
-                      List<File> files =
-                          result.paths.map((path) => File(path!)).toList();
+                      File files = File(result.paths[0]!);
                       setState(() {
-                        selectedFiles = files;
+                        selectedFile = files;
                       });
                       return;
                     }
@@ -101,7 +100,7 @@ class _AddClothesFormWidgetState extends State<AddClothesFormWidget> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate() &&
                         selectedValue != null &&
-                        selectedFiles != null) {
+                        selectedFile != null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             backgroundColor: AppColors.primaryHeaderColor,
@@ -110,20 +109,17 @@ class _AddClothesFormWidgetState extends State<AddClothesFormWidget> {
                       const uuid = Uuid();
                       final storage = FirebaseStorage.instance.ref();
 
-                      List<String> fileIds = [];
-                      for (var file in selectedFiles!) {
-                        final child = storage
-                            .child("${uuid.v1()}${p.extension(file.path)}");
-                        final snap = await child.putFile(file);
-                        final link = await snap.ref.getDownloadURL();
-                        fileIds.add(link);
-                      }
+                      final child = storage.child(
+                          "${uuid.v1()}${p.extension((selectedFile?.path)!)}");
+                      final snap = await child.putFile(selectedFile!);
+                      final link = await snap.ref.getDownloadURL();
+                      String fileLink = link;
 
                       Map<String, dynamic> dataToSave = {
                         'name': name.text,
                         'quantity': quantity.text,
                         'type': selectedValue!,
-                        'file_links': fileIds,
+                        'file_link': fileLink,
                       };
                       final reference = await FirebaseFirestore.instance
                           .collection('clothes')
@@ -147,16 +143,14 @@ class _AddClothesFormWidgetState extends State<AddClothesFormWidget> {
   }
 }
 
-Iterable<Widget> imagesBuilder(List<File>? files) {
-  if (files != null && files.isNotEmpty) {
-    return files.map(
-      (file) => Image(
-        image: FileImage(file),
-        width: 40,
-      ),
+Widget imagesBuilder(File? file) {
+  if (file != null) {
+    return Image(
+      image: FileImage(file),
+      width: 40,
     );
   }
-  return [SizedBox(width: 10)];
+  return const SizedBox(width: 10);
 }
 
 List<String> clothingTypes = [

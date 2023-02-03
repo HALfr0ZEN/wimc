@@ -23,7 +23,7 @@ class _ShowClothesState extends State<ShowClothes> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return DataTable(
-                  columns: [
+                  columns: const [
                     DataColumn(
                         label: Text('Name', style: TextStyle(fontSize: 20.0))),
                     DataColumn(
@@ -31,6 +31,8 @@ class _ShowClothesState extends State<ShowClothes> {
                             Text('Quantity', style: TextStyle(fontSize: 20.0))),
                     DataColumn(
                         label: Text('Type', style: TextStyle(fontSize: 20.0))),
+                    DataColumn(
+                        label: Text('Photo', style: TextStyle(fontSize: 20.0))),
                     DataColumn(
                         label: Text('', style: TextStyle(fontSize: 20.0))),
                   ],
@@ -54,12 +56,12 @@ class _ShowClothesState extends State<ShowClothes> {
           .toList();
       List<DataRow> rows = [];
       for (var record in data) {
-        if (record == null) continue;
         rows.add(DataRow(
           cells: [
             DataCell(Text(record["name"])),
             DataCell(Text(record["quantity"])),
             DataCell(Text(record["type"])),
+            DataCell(Image.network(record["file_link"])),
             DataCell(IconButton(
                 onPressed: () {
                   print(record);
